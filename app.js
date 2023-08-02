@@ -29,11 +29,19 @@ connectToDb((err) => {
 
 // routes
 app.get('/books', (req, res) => {
+
+    // current page
+    const page = req.query.p || 0
+    const booksPerPage = 3
+
+
     let books = []
 
     db.collection('books')
         .find()     // ei filtteriä koska halutaan all of them books
         .sort( {author: 1})
+        .skip(page * booksPerPage)     // hyppää kirjojen yli ni ei tuu samat kokoajan
+        .limit(booksPerPage)        // rajota se tähän määrään
         .forEach(book => books.push(book))      // Async
         .then(() => {
             res.status(200).json(books)
@@ -114,3 +122,4 @@ app.patch('/books/:id', (req, res) => {
     }
 
 })
+
